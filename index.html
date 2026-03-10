@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>USA Tax & Debt Tracker - Cesar</title>
+    <title>Victory Tracker - Cesar</title>
     <style>
         :root {
             --bg: #000000;
@@ -16,6 +16,7 @@
             --gray: #8e8e93;
             --blue: #0a84ff;
             --expense: #ff7043;
+            --gold: #ffd700;
         }
 
         body {
@@ -37,6 +38,7 @@
             max-width: 450px;
             margin-bottom: 15px;
             box-sizing: border-box;
+            transition: all 0.5s ease;
         }
 
         h2 {
@@ -77,15 +79,6 @@
             cursor: pointer;
         }
 
-        .btn-small {
-            padding: 5px 10px;
-            font-size: 0.7rem;
-            background: #3a3a3c;
-            color: var(--danger);
-            border-radius: 5px;
-            border: none;
-        }
-
         .stats-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -97,6 +90,8 @@
             padding: 12px;
             border-radius: 10px;
             text-align: center;
+            border: 1px solid transparent;
+            transition: all 0.5s;
         }
 
         .stat-label {
@@ -112,6 +107,41 @@
             font-weight: bold;
         }
 
+        /* ESTILO DORADO DE VICTORIA */
+        .victory-gold {
+            border-color: var(--gold) !important;
+            color: var(--gold) !important;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+        }
+
+        #notificacion {
+            display: none;
+            background: linear-gradient(45deg, #d4af37, #fcf6ba, #d4af37);
+            color: black;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 15px;
+            width: 100%;
+            max-width: 450px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.02);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
         .history-item {
             display: flex;
             justify-content: space-between;
@@ -120,50 +150,46 @@
             border-bottom: 1px solid #3a3a3c;
         }
 
-        .highlight {
-            border: 1px solid var(--accent);
+        .btn-small {
+            padding: 5px 10px;
+            font-size: 0.7rem;
+            background: #3a3a3c;
+            color: var(--danger);
+            border-radius: 5px;
+            border: none;
         }
     </style>
 </head>
 
 <body>
 
+    <div id="notificacion">¡FELICIDADES! 🎉 DEUDA PAGADA!</div>
+
     <div class="card">
-        <h2>Configuración General</h2>
-        <div class="input-group">
-            <select id="selectEstado" onchange="actualizarConfig()"></select>
-        </div>
-        <div class="input-group">
-            <input type="number" id="inputDeudaTotal" placeholder="Deuda Total ($)">
-            <button onclick="setDeudaTotal()">Set</button>
-        </div>
-        <div class="input-group">
-            <input type="number" id="inputAhorro" placeholder="Ahorro Actual ($)">
-            <button onclick="setAhorro()">Set</button>
-        </div>
-        <div class="input-group">
-            <input type="number" id="inputGastos" placeholder="Gasto Semanal ($)"
-                style="border: 1px solid var(--expense)">
-            <button onclick="setGastos()" style="background: var(--expense)">Set</button>
-        </div>
+        <h2>Configuración</h2>
+        <div class="input-group"><select id="selectEstado" onchange="actualizarConfig()"></select></div>
+        <div class="input-group"><input type="number" id="inputDeudaTotal" placeholder="Deuda Total ($)"><button
+                onclick="setDeudaTotal()">Set</button></div>
+        <div class="input-group"><input type="number" id="inputAhorro" placeholder="Ahorro Inicial ($)"><button
+                onclick="setAhorro()">Set</button></div>
+        <div class="input-group"><input type="number" id="inputGastos" placeholder="Gasto Semanal ($)"><button
+                onclick="setGastos()">Set</button></div>
     </div>
 
-    <div class="card highlight">
+    <div class="card" style="border: 1px solid var(--accent)">
         <h2>Registrar Horas</h2>
-        <div class="input-group">
-            <input type="number" id="inputHoras" placeholder="Horas hoy" step="0.1">
-            <button onclick="guardarDia()">Añadir</button>
-        </div>
+        <div class="input-group"><input type="number" id="inputHoras" placeholder="Horas hoy" step="0.1"><button
+                onclick="guardarDia()">Añadir</button></div>
     </div>
 
     <div class="card">
-        <h2>Resumen Financiero Líquido</h2>
+        <h2>Resumen Financiero</h2>
         <div class="stats-grid">
-            <div class="stat-box">
+            <div id="boxDeuda" class="stat-box">
                 <span class="stat-label">Deuda Restante</span>
                 <span id="valFaltante" class="stat-val" style="color:var(--danger)">--</span>
             </div>
-            <div class="stat-box">
+            <div id="boxLibre" class="stat-box">
                 <span class="stat-label">Libre Hoy</span>
                 <span id="valLibre" class="stat-val" style="color:var(--safe)">--</span>
             </div>
@@ -171,19 +197,16 @@
                 <span class="stat-label">Bolsillo al 29 de Marzo</span>
                 <span id="valProyeccion" class="stat-val" style="color:var(--accent)">--</span>
             </div>
-            <div class="stat-box" style="background: #1a2a3a;">
-                <span class="stat-label" style="color:var(--blue)">Refund Estatal</span>
-                <span id="valRefund" class="stat-val" style="color:var(--blue)">--</span>
-            </div>
-            <div class="stat-box" style="background: #2a1a1a;">
-                <span class="stat-label" style="color:var(--expense)">Gastos Acum.</span>
-                <span id="valGastosTotal" class="stat-val" style="color:var(--expense)">--</span>
-            </div>
+            <div class="stat-box" style="background: #1a2a3a;"><span class="stat-label" style="color:var(--blue)">Refund
+                    Estatal</span><span id="valRefund" class="stat-val" style="color:var(--blue)">--</span></div>
+            <div class="stat-box" style="background: #2a1a1a;"><span class="stat-label"
+                    style="color:var(--expense)">Gastos Acum.</span><span id="valGastosTotal" class="stat-val"
+                    style="color:var(--expense)">--</span></div>
         </div>
     </div>
 
     <div class="card">
-        <h2>Historial de Días</h2>
+        <h2>Historial</h2>
         <div id="listaHistorial" style="max-height: 120px; overflow-y: auto;"></div>
     </div>
 
@@ -192,7 +215,6 @@
         const FECHA_SALIDA = new Date('2026-03-29');
         const FICA_TAX = 0.0765;
         const FEDERAL_TAX = 0.10;
-
         const STATE_TAXES = { "AL": 0.02, "AK": 0.00, "AZ": 0.025, "AR": 0.02, "CA": 0.04, "CO": 0.044, "CT": 0.03, "DE": 0.022, "FL": 0.00, "GA": 0.054, "HI": 0.014, "ID": 0.058, "IL": 0.0495, "IN": 0.0305, "IA": 0.044, "KS": 0.031, "KY": 0.04, "LA": 0.018, "ME": 0.058, "MD": 0.02, "MA": 0.05, "MI": 0.0425, "MN": 0.0535, "MS": 0.00, "MO": 0.02, "MT": 0.047, "NE": 0.024, "NV": 0.00, "NH": 0.00, "NJ": 0.014, "NM": 0.017, "NY": 0.04, "NC": 0.045, "ND": 0.00, "OH": 0.027, "OK": 0.002, "OR": 0.047, "PA": 0.0307, "RI": 0.0375, "SC": 0.00, "SD": 0.00, "TN": 0.00, "TX": 0.00, "UT": 0.0465, "VT": 0.0335, "VA": 0.02, "WA": 0.00, "WV": 0.023, "WI": 0.035, "WY": 0.00 };
 
         let registros = JSON.parse(localStorage.getItem('cesar_logs')) || [];
@@ -211,26 +233,10 @@
             }
         }
 
-        function actualizarConfig() {
-            estadoActual = document.getElementById('selectEstado').value;
-            localStorage.setItem('cesar_estado', estadoActual);
-            render();
-        }
-
-        function setDeudaTotal() {
-            deudaObjetivo = parseFloat(document.getElementById('inputDeudaTotal').value) || 0;
-            localStorage.setItem('cesar_deuda_meta', deudaObjetivo); render();
-        }
-
-        function setAhorro() {
-            ahorroInicial = parseFloat(document.getElementById('inputAhorro').value) || 0;
-            localStorage.setItem('cesar_ahorro', ahorroInicial); render();
-        }
-
-        function setGastos() {
-            gastosSemanales = parseFloat(document.getElementById('inputGastos').value) || 0;
-            localStorage.setItem('cesar_gastos', gastosSemanales); render();
-        }
+        function actualizarConfig() { estadoActual = document.getElementById('selectEstado').value; localStorage.setItem('cesar_estado', estadoActual); render(); }
+        function setDeudaTotal() { deudaObjetivo = parseFloat(document.getElementById('inputDeudaTotal').value) || 0; localStorage.setItem('cesar_deuda_meta', deudaObjetivo); render(); }
+        function setAhorro() { ahorroInicial = parseFloat(document.getElementById('inputAhorro').value) || 0; localStorage.setItem('cesar_ahorro', ahorroInicial); render(); }
+        function setGastos() { gastosSemanales = parseFloat(document.getElementById('inputGastos').value) || 0; localStorage.setItem('cesar_gastos', gastosSemanales); render(); }
 
         function guardarDia() {
             const h = parseFloat(document.getElementById('inputHoras').value);
@@ -242,11 +248,7 @@
             }
         }
 
-        function eliminarDia(id) {
-            registros = registros.filter(r => r.id !== id);
-            localStorage.setItem('cesar_logs', JSON.stringify(registros));
-            render();
-        }
+        function eliminarDia(id) { registros = registros.filter(r => r.id !== id); localStorage.setItem('cesar_logs', JSON.stringify(registros)); render(); }
 
         function render() {
             const histDiv = document.getElementById('listaHistorial');
@@ -262,32 +264,41 @@
                 let horasTotal = semana.reduce((a, b) => a + b, 0);
                 let bruto = horasTotal > 40 ? (40 * BASE_PAGO) + ((horasTotal - 40) * BASE_PAGO * 1.5) : horasTotal * BASE_PAGO;
                 let taxTotal = FICA_TAX + FEDERAL_TAX + taxEstatal;
-
                 ganadoNetoTotal += (bruto * (1 - taxTotal));
-                refundAcumulado += (bruto * taxEstatal); // Refund solo estatal
+                refundAcumulado += (bruto * taxEstatal);
             }
 
-            // Ingeniería de reversa para el Refund de ahorros pasados
             let taxRateTotalBase = FICA_TAX + FEDERAL_TAX + taxEstatal;
-            let ahorroBrutoEstimado = ahorroInicial / (1 - taxRateTotalBase);
-            let refundDeAhorros = (ahorroBrutoEstimado * taxEstatal) || 0;
+            let refundDeAhorros = (ahorroInicial / (1 - taxRateTotalBase) * taxEstatal) || 0;
 
             let gastosTotales = semanasContadas * gastosSemanales;
             let capitalRealActual = ahorroInicial + ganadoNetoTotal - gastosTotales;
-            let refundTotalFinal = refundAcumulado + refundDeAhorros;
 
             let faltante = Math.max(0, deudaObjetivo - capitalRealActual);
             let libre = Math.max(0, capitalRealActual - deudaObjetivo);
 
             const semanasRest = Math.max(0, Math.ceil((FECHA_SALIDA - new Date()) / (1000 * 60 * 60 * 24 * 7)));
             const promedioNetoSemanal = semanasContadas > 0 ? (ganadoNetoTotal / semanasContadas) : 0;
-            const proyeccionFinalBolsillo = (capitalRealActual + ((promedioNetoSemanal - gastosSemanales) * semanasRest)) - deudaObjetivo;
+            const proyeccionFinal = (capitalRealActual + ((promedioNetoSemanal - gastosSemanales) * semanasRest)) - deudaObjetivo;
 
             document.getElementById('valFaltante').innerText = `$${faltante.toFixed(2)}`;
             document.getElementById('valLibre').innerText = `$${libre.toFixed(2)}`;
-            document.getElementById('valProyeccion').innerText = `$${Math.max(0, proyeccionFinalBolsillo).toFixed(2)}`;
-            document.getElementById('valRefund').innerText = `$${refundTotalFinal.toFixed(2)}`;
+            document.getElementById('valProyeccion').innerText = `$${Math.max(0, proyeccionFinal).toFixed(2)}`;
+            document.getElementById('valRefund').innerText = `$${(refundAcumulado + refundDeAhorros).toFixed(2)}`;
             document.getElementById('valGastosTotal').innerText = `$${gastosTotales.toFixed(2)}`;
+
+            // LÓGICA DE VICTORIA
+            if (faltante <= 0 && deudaObjetivo > 0) {
+                document.getElementById('notificacion').style.display = 'block';
+                document.getElementById('boxDeuda').classList.add('victory-gold');
+                document.getElementById('boxLibre').classList.add('victory-gold');
+                document.getElementById('valFaltante').style.color = 'var(--gold)';
+            } else {
+                document.getElementById('notificacion').style.display = 'none';
+                document.getElementById('boxDeuda').classList.remove('victory-gold');
+                document.getElementById('boxLibre').classList.remove('victory-gold');
+                document.getElementById('valFaltante').style.color = 'var(--danger)';
+            }
         }
 
         inicializarSelect();
