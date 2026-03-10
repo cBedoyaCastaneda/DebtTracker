@@ -1,162 +1,87 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Debt Tracker Pro - Cesar</title>
     <style>
-        :root {
-            --bg: #000000;
-            --card: #1c1c1e;
-            --accent: #ff9500;
-            --text: #ffffff;
-            --safe: #34c759;
-            --danger: #ff3b30;
-            --gray: #8e8e93;
-        }
-
-        body {
-            font-family: -apple-system, system-ui, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            padding: 20px;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .card {
-            background: var(--card);
-            padding: 20px;
-            border-radius: 12px;
-            width: 100%;
-            max-width: 400px;
-            margin-bottom: 15px;
-            box-sizing: border-box;
-        }
-
-        h2 {
-            margin: 0 0 15px 0;
-            font-size: 1.1rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--gray);
-        }
-
-        .input-group {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-
-        input {
-            flex: 1;
-            padding: 12px;
-            border-radius: 8px;
-            border: none;
-            background: #2c2c2e;
-            color: white;
-            font-size: 1rem;
-        }
-
-        button {
-            padding: 12px;
-            border-radius: 8px;
-            border: none;
-            background: var(--accent);
-            color: black;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .btn-small {
-            padding: 5px 10px;
-            font-size: 0.7rem;
-            background: #3a3a3c;
-            color: var(--danger);
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        .stat-box {
-            background: #2c2c2e;
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-        }
-
-        .stat-label {
-            font-size: 0.7rem;
-            color: var(--gray);
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        .stat-val {
-            font-size: 1.2rem;
-            font-weight: bold;
-        }
-
-        .history-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid #3a3a3c;
-        }
+        :root { --bg: #000000; --card: #1c1c1e; --accent: #ff9500; --text: #ffffff; --safe: #34c759; --danger: #ff3b30; --gray: #8e8e93; }
+        body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--text); padding: 20px; margin: 0; display: flex; flex-direction: column; align-items: center; }
+        .card { background: var(--card); padding: 20px; border-radius: 12px; width: 100%; max-width: 400px; margin-bottom: 15px; box-sizing: border-box; }
+        h2 { margin: 0 0 15px 0; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; color: var(--gray); }
+        .input-group { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+        input { flex: 1; min-width: 120px; padding: 12px; border-radius: 8px; border: none; background: #2c2c2e; color: white; font-size: 1rem; }
+        button { padding: 12px; border-radius: 8px; border: none; background: var(--accent); color: black; font-weight: bold; cursor: pointer; }
+        .btn-small { padding: 5px 10px; font-size: 0.7rem; background: #3a3a3c; color: var(--danger); }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .stat-box { background: #2c2c2e; padding: 15px; border-radius: 10px; text-align: center; }
+        .stat-label { font-size: 0.7rem; color: var(--gray); display: block; margin-bottom: 5px; }
+        .stat-val { font-size: 1.1rem; font-weight: bold; }
+        .history-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #3a3a3c; }
+        .config-label { font-size: 0.8rem; color: var(--accent); margin-bottom: 5px; display: block; }
     </style>
 </head>
-
 <body>
 
     <div class="card">
-        <h2>Configuración</h2>
+        <h2>Configuración Global</h2>
+        
+        <span class="config-label">Objetivo de Deuda ($)</span>
         <div class="input-group">
-            <input type="number" id="inputAhorro" placeholder="Dinero ya ahorrado ($)">
-            <button onclick="setAhorro()">Set</button>
+            <input type="number" id="inputDeudaTotal" placeholder="Ej: 3600">
+            <button onclick="setDeudaTotal()">Actualizar Meta</button>
         </div>
-        <p id="txtAhorroActual" style="font-size: 0.8rem; color: var(--safe); margin: 5px 0 0 0;"></p>
+
+        <span class="config-label">Dinero ya ahorrado ($)</span>
+        <div class="input-group">
+            <input type="number" id="inputAhorro" placeholder="Ej: 500">
+            <button onclick="setAhorro()">Set Ahorro</button>
+        </div>
     </div>
 
     <div class="card">
         <h2>Nueva Jornada</h2>
         <div class="input-group">
-            <input type="number" id="inputHoras" placeholder="Horas trabajadas" step="0.1">
-            <button onclick="guardarDia()">Añadir</button>
+            <input type="number" id="inputHoras" placeholder="Horas de hoy" step="0.1">
+            <button onclick="guardarDia()">Añadir Horas</button>
         </div>
     </div>
 
     <div class="card">
-        <h2>Estado de Deuda ($3600)</h2>
+        <h2 id="tituloMeta">Cargando Meta...</h2>
         <div class="stats-grid">
             <div class="stat-box">
-                <span class="stat-label">FALTANTE</span>
+                <span class="stat-label">FALTANTE ACTUAL</span>
                 <span id="valFaltante" class="stat-val" style="color:var(--danger)">--</span>
             </div>
             <div class="stat-box">
-                <span class="stat-label">PROYECTADO</span>
+                <span class="stat-label">PROYECCIÓN FINAL</span>
                 <span id="valProyeccion" class="stat-val">--</span>
             </div>
         </div>
     </div>
 
     <div class="card">
-        <h2>Historial de Días</h2>
+        <h2>Historial</h2>
         <div id="listaHistorial"></div>
     </div>
 
     <script>
-        const CONFIG = { DEUDA: 3600, BASE: 15.16, SALIDA: new Date('2026-03-29') };
-
-        // Cargar datos de LocalStorage
+        const BASE_PAGO = 15.16;
+        const FECHA_SALIDA = new Date('2026-03-29');
+        
+        // Cargar datos (o valores por defecto si es la primera vez)
         let registros = JSON.parse(localStorage.getItem('cesar_logs')) || [];
         let ahorroInicial = parseFloat(localStorage.getItem('cesar_ahorro')) || 0;
+        let deudaObjetivo = parseFloat(localStorage.getItem('cesar_deuda_meta')) || 3600;
+
+        function setDeudaTotal() {
+            const val = parseFloat(document.getElementById('inputDeudaTotal').value);
+            if (isNaN(val) || val < 0) return alert("Ingresa un monto válido");
+            deudaObjetivo = val;
+            localStorage.setItem('cesar_deuda_meta', deudaObjetivo);
+            render();
+        }
 
         function setAhorro() {
             const val = parseFloat(document.getElementById('inputAhorro').value);
@@ -168,9 +93,10 @@
 
         function guardarDia() {
             const h = parseFloat(document.getElementById('inputHoras').value);
-            if (!h || h < 0) return;
+            if (isNaN(h) || h < 0) return;
             registros.push({ id: Date.now(), fecha: new Date().toLocaleDateString(), horas: h });
             save();
+            document.getElementById('inputHoras').value = '';
         }
 
         function eliminarDia(id) {
@@ -185,14 +111,12 @@
 
         function calcularSueldo(listaHoras) {
             let total = listaHoras.reduce((a, b) => a + b, 0);
-            return total > 40 ? (40 * CONFIG.BASE) + ((total - 40) * CONFIG.BASE * 1.5) : total * CONFIG.BASE;
+            return total > 40 ? (40 * BASE_PAGO) + ((total - 40) * BASE_PAGO * 1.5) : total * BASE_PAGO;
         }
 
         function render() {
-            // Actualizar texto de ahorro
-            document.getElementById('txtAhorroActual').innerText = `Ahorro base detectado: $${ahorroInicial}`;
-
-            // Renderizar Historial con opción de borrar
+            document.getElementById('tituloMeta').innerText = `Estado de Deuda ($${deudaObjetivo})`;
+            
             const histDiv = document.getElementById('listaHistorial');
             histDiv.innerHTML = registros.map(r => `
                 <div class="history-item">
@@ -201,7 +125,6 @@
                 </div>
             `).reverse().join('');
 
-            // Lógica de cálculo por semanas
             let ganadoEnTrabajo = 0;
             for (let i = 0; i < registros.length; i += 7) {
                 let semana = registros.slice(i, i + 7).map(r => r.horas);
@@ -209,20 +132,18 @@
             }
 
             let capitalTotal = ahorroInicial + ganadoEnTrabajo;
-            let faltante = CONFIG.DEUDA - capitalTotal;
-
-            // Proyección básica
-            const semanasRest = Math.ceil((CONFIG.SALIDA - new Date()) / (1000 * 60 * 60 * 24 * 7));
+            let faltante = deudaObjetivo - capitalTotal;
+            
+            const semanasRest = Math.ceil((FECHA_SALIDA - new Date()) / (1000*60*60*24*7));
             const promedioSemanal = registros.length > 0 ? (ganadoEnTrabajo / Math.ceil(registros.length / 7)) : 0;
             const proyeccionFinal = capitalTotal + (promedioSemanal * semanasRest);
 
             document.getElementById('valFaltante').innerText = `$${Math.max(0, faltante).toFixed(2)}`;
             document.getElementById('valProyeccion').innerText = `$${proyeccionFinal.toFixed(2)}`;
-            document.getElementById('valProyeccion').style.color = proyeccionFinal >= 3600 ? "var(--safe)" : "var(--danger)";
+            document.getElementById('valProyeccion').style.color = proyeccionFinal >= deudaObjetivo ? "var(--safe)" : "var(--danger)";
         }
 
         render();
     </script>
 </body>
-
 </html>
